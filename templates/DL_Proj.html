@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Handwritting Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background-color: #ffcccb;
+            /* New background color */
+        }
+
+        header {
+            background-color: #649dc2;
+            color: #fff;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position:relative;
+        }
+
+        h1 {
+            font-size: 36px;
+        }
+
+        .section {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+            padding: 20px;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            background-color: #649dc2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #uploaded-image {
+            display: none;
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+
+        #text-output {
+            margin-top: 20px;
+        }
+
+        #extract-button {
+            background-color: #649dc2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 30px 250px;
+            align-content: center;
+        }
+
+        #text-output {
+            margin-top: 20px;
+        }
+
+        #extracted-text {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #warning-message {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Handwritting Recognition</h1>
+    </header>
+    <div class="section" id="intro">
+        <h2>Introduction</h2>
+        <p>Welcome to our Handwritten Text Recognition project. In a world where handwriting is a unique form of
+            personal expression, our project bridges the gap between the analog and digital worlds. We specialize in
+            transforming handwritten content into digital text, enabling easy processing and enhancing accessibility.
+            With our tool, you can effortlessly convert handwritten content into machine-readable text.</p>
+    </div>
+    <div class="section" id="our-project">
+        <h2>Our Project</h2>
+        <p>Our Handwritten Text Recognition project is a powerful tool designed to convert handwritten text into
+            machine-readable content. Whether you have a handwritten note, document, or any other form of handwritten
+            text, our project can seamlessly extract the text from images and present it in a digital format. We have
+            incorporated several key features to make the text extraction process easy and efficient.</p>
+        <p>Key Features:</p>
+        <ul>
+            <li>Effortless Text Extraction: Simply upload an image with handwritten text, and our project will handle
+                the rest.</li>
+            <li>Enhanced Accessibility: Make handwritten content accessible to digital applications and processes.</li>
+            <li>Multiple Language Support: Recognizes and extracts text in various languages.</li>
+            <li>Accurate and Efficient: Utilizes advanced algorithms for precise and rapid text recognition.</li>
+        </ul>
+    </div>
+    <div class="section" id="image-upload">
+        <h2>Upload an Image</h2>
+        <p>Upload an image containing handwritten text below, and we will extract the text for you.</p>
+        <label for="imageInput" class="upload-btn">Choose Image</label>
+        <input type="file" id="imageInput" name="image" accept=".jpg, .jpeg, .png" />
+        <img id="uploaded-image" src="#" alt="Uploaded Image">
+        <div>
+            <button id="extract-button">Extract</button>
+        </div>
+        <div id="text-output">
+            <h3>Text Extracted from the Image:</h3>
+            <p id="extracted-text">Text will appear here once the image is processed.</p>
+            <p id="warning-message"></p>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const imageInput = document.getElementById('imageInput');
+            const uploadedImage = document.getElementById('uploaded-image');
+            const extractButton = document.getElementById('extract-button'); // Change 'extractButton' to 'extract-button'
+            const extractedText = document.getElementById('extracted-text');
+    
+            extractButton.addEventListener('click', function () {
+                const file = imageInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('image', file);
+    
+                    fetch('/extract_text', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.text())
+                        .then(data => {
+                            extractedText.textContent = data; // Display the extracted text
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            extractedText.textContent = 'An error occurred during text extraction.';
+                        });
+                } else {
+                    extractedText.textContent = 'Please upload an image.';
+                }
+            });
+    
+            imageInput.addEventListener('change', function () {
+                const file = imageInput.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        uploadedImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    uploadedImage.src = '#';
+                }
+            });
+        });
+    </script>    
+</body>
+
+</html>
